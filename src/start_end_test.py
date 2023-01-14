@@ -4,7 +4,7 @@ from std_msg.msg import Int32
 def start_end_test():
     rospy.init_node('start_end_test')
 
-    start_end_pub = rospy.publisher('start_end', Int32, queue_size=10)
+    start_end_pub = rospy.Publisher('start_end', Int32, queue_size=10)
 
     rate = rospy.Rate(10) 
 

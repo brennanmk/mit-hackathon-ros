@@ -4,6 +4,7 @@ import rospy
 from clover import srv
 from std_srvs.srv import Trigger
 from std_msgs.msg import Int32
+from sensor_msg.msg import Range
 
 class fly:
     def __init__(self):
@@ -18,27 +19,40 @@ class fly:
         self.set_rates = rospy.ServiceProxy('set_rates', srv.SetRates)
         self.land = rospy.ServiceProxy('land', Trigger)
 
+        self.start_end_pub = rospy.Publisher('/start_end', Int32, queue_size=1)
+
         rospy.Subscriber('/move',
                          Int32, self.linear_z) 
 
         rospy.Subscriber('/start_end',
                     Int32, self.start_end)
-
-    def linear_z(self, data):
-        tel = self.get_telemetry
         
-        if data.data = 1:
-            if   < 2 and data.data > 1:
+        self.rate = rospy.Rate(30)
+
+        self.height = 0
+        self.velocity = 0
+
+        rospy.Subscriber('/rangefinder/range', Range, self.set_height)
+
+        while not rospy.is_shutdown():
+            self.fly()
+            self.rate.sleep()
+
+    def set_height(self, data):
+
+        self.height = data.range
+
+    def start_end(data)
+
+    def fly(self, data):
+
+        if data.data == 1:
+            if self.height < 2 and data.data > 1:
                 self.navigate(x=0, y=0, z=(data.data + 0.1), speed=0.5, frame_id='body')
         else:
-            if data.data < 2 and data.data > 1:
+            if data.data  2 and data.data > 1:
                 self.navigate(x=0, y=0, z=(data.data + 0.1), speed=0.5, frame_id='body')
 
-    def start_end(self, data):
-        if data.data == 0:
-            self.land()
-        else:
-            self.navigate(x=0, y=0, z=1.5, speed=0.5, frame_id='body', auto_arm=True)
 
 
 if __name__ == '__main__':

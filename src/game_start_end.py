@@ -22,9 +22,13 @@ class game_start_end:
 
         # Game initially not started
         self.game_flag = 0
+        self.rate = rospy.rate(10)
 
         rospy.Subscriber('/start_end',
                     Int32, self.start_end)
+        
+        self.ready_killed_pub = rospy.Publisher('/ready_killed', Int32, queue_size=1)
+        self.rate.sleep()
         
         self.set_effect = rospy.ServiceProxy('led/set_effect', SetLEDEffect)  
 
@@ -36,21 +40,18 @@ class game_start_end:
             # Game over
             # Go to z = 0
             self.set_effect(r=255, g=0, b=0)
-            self.sleep(2)
             self.land()
             self.set_effect(r=255, g=255, b=255)
-            self.sleep(2)
+            self.ready_killed_pub.publish(0)
         else:
             # Game started
             # Go to z = 1.5
             self.set_effect(r=0, g=255, b=0)
-            self.sleep(2)
             self.navigate(x=0, y=0, z=1.5, speed=0.5, frame_id='body', auto_arm=True)
-            self.sleep(2)
+            self.ready_killed_pub.publish(1)
 
 if __name__ == '__main__':
     try:
         game_start_end()
     except Exception as e:
         print(e)
-        exit()
