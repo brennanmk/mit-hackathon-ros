@@ -20,8 +20,6 @@ class Teleop:
         self.dead_zone = 5 # 5 degree deadzone
         self.max = 35 
 
-        self.normalize = 45
-
         self.cmd_vel_pub = rospy.Publisher('/mobile_base/cmd_vel', Twist, queue_size=3)
         rospy.Subscriber('/joy', Float32, self.control_base)
 
@@ -31,23 +29,12 @@ class Teleop:
             there is a similair function in https://github.com/Interbotix/interbotix_ros_toolboxes/blob/main/interbotix_xs_toolbox/interbotix_xs_modules/src/interbotix_xs_modules/locobot.py, 
             this function was written to gain a better understanding of how the geometry/Twist message type works.'''
 
+
         msg = Twist()
         msg.angular.y = 0.0
         msg.angular.y = 0.0
-        if self.dead_zone < yaw  < self.max:
-            msg.angular.z = (yaw / self.normalize) * self.ang_z_multiplier
-        elif self.dead_zone >= yaw:
-            msg.angular.z = 0
-        else:
-            msg.angular.z = 1
-        
-        if self.dead_zone < x <= self.max:
-            msg.linear.x = (x / self.normalize) * self.lin_x_multiplier
-        elif self.dead_zone >= x:
-            msg.linear.x = 0
-        else:
-            msg.linear.x = 1
-    
+        msg.angular.z = yaw * self.ang_z_multiplier
+        msg.linear.x = x * self.lin_x_multiplier
         msg.linear.y = 0.0
         msg.linear.z = 0.0
 
